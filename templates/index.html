@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Kursregistrering</title>
+</head>
+<body>
+  <h1>Kursregistrering</h1>
+  <form id="courseRegistration">
+    <input type="text" id="studentId" placeholder="Student ID"><br>
+    <input type="text" id="programId" placeholder="Program ID"><br> 
+    <input type="text" id="courseCode" placeholder="Course Code"><br>
+    <p id="registrationMessage"></p>
+    <button type="button" onclick="registerCourse()">Registrera kurs</button>
+  </form>
+
+  <script>
+    function registerCourse() {
+      const studentId = document.getElementById('studentId').value;
+      const programId = document.getElementById('programId').value; 
+      const courseCode = document.getElementById('courseCode').value;
+
+      const data = {
+        studentId: studentId,
+        programId: programId, 
+        courseCode: courseCode
+      };
+
+      fetch('/register_course', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        }
+        throw new Error('Network response was not ok.');
+      })
+      .then(data => {
+        const messageElement = document.getElementById('registrationMessage');
+        messageElement.textContent = data.message;
+        messageElement.style.color = data.success ? 'green' : 'red';
+      })
+      .catch(error => {
+        console.error('There was an error registering the course:', error);
+        const messageElement = document.getElementById('registrationMessage');
+        messageElement.textContent = 'Error registering the course. Please try again.';
+        messageElement.style.color = 'red';
+      });
+    }
+  </script>
+</body>
+</html>
